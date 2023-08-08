@@ -1,12 +1,9 @@
 package com.mindhub.homebanking.models;
 
 import org.hibernate.annotations.GenericGenerator;
-
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 @Entity
 public class Client {
 
@@ -14,17 +11,18 @@ public class Client {
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
     @GenericGenerator(name = "native", strategy = "native")
     private Long id;
+    @OneToMany(mappedBy = "ownerAccount", fetch = FetchType.EAGER)
+    Set<Account> accounts = new HashSet<>();
     private String firstName;
     private String lastName;
     private String email;
 
     public Client() { }
 
-    public Client(String first, String last, String mail) {
-        firstName = first;
-        lastName = last;
-        email= mail;
-
+    public Client(String firstName, String lastName, String email) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email= email;
     }
 
     public Long getId() {
@@ -35,21 +33,24 @@ public class Client {
         return firstName;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
     public String getLastName() {
         return lastName;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-
     public  String getEmail(){
         return email;
+    }
+
+    public Set<Account> getAccounts() {
+        return accounts;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public void setEmail(String email) {
@@ -57,6 +58,11 @@ public class Client {
     }
 
     public String toString() {
-        return firstName + " " + lastName + " " + email;
+        return firstName + " " + lastName;
+    }
+
+    public void addAccount(Account account){
+        account.setOwnerAccount(this);
+        accounts.add(account);
     }
 }
