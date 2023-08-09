@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class Account {
@@ -11,7 +13,6 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
     @GenericGenerator(name="native",strategy = "native")
     private Long id;
-
     private String number;
     private LocalDate creationDate;
     private double balance;
@@ -19,6 +20,9 @@ public class Account {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "client_id")
     private Client ownerAccount;
+
+    @OneToMany(mappedBy = "accountTransactions", fetch = FetchType.EAGER)
+    Set<Transaction> transactions = new HashSet<>();
 
     public Account() {
     }
@@ -45,6 +49,10 @@ public class Account {
         return balance;
     }
 
+    public Set<Transaction> getTransactions() {
+        return transactions;
+    }
+
     @JsonIgnore
     public Client getOwnerAccount() {
         return ownerAccount;
@@ -66,5 +74,13 @@ public class Account {
         this.balance = balance;
     }
 
+    public void addTransaction(Transaction transaction){
+        transaction.setAccountTransactions(this);
+        transactions.add(transaction);
+    }
+
+    public void setTransactions(Set<Transaction> transactions) {
+        this.transactions = transactions;
+    }
 }
 
