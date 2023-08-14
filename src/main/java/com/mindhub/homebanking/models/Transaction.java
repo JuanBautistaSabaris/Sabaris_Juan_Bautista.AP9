@@ -11,13 +11,9 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
     @GenericGenerator(name="native",strategy = "native")
     private Long id;
-
     private TransactionType type;
-
     private double amount;
-
     private String description;
-
     private LocalDate date;
 
     @ManyToOne(fetch = FetchType.EAGER)
