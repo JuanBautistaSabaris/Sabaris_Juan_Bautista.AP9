@@ -26,13 +26,16 @@ public class Client {
     private String firstName;
     private String lastName;
     private String email;
+    private String password;
 
     public Client() { }
 
-    public Client(String firstName, String lastName, String email) {
+    public Client(String firstName, String lastName, String email, String password) {
         this.firstName = firstName;
         this.lastName = lastName;
-        this.email= email;
+        this.email = email;
+        this.password = password;
+        this.clientLoans = new HashSet<>();
     }
 
     public Long getId() {
@@ -50,6 +53,8 @@ public class Client {
     public  String getEmail(){
         return email;
     }
+
+    public String getPassword() { return password; }
 
     public Set<Account> getAccounts() {
         return accounts;
@@ -71,6 +76,8 @@ public class Client {
         this.email = email;
     }
 
+    public void setPassword(String password) { this.password = password; }
+
     public String toString() {
         return firstName + " " + lastName;
     }
@@ -87,6 +94,11 @@ public class Client {
     public void addCard(Card card){
         card.setOwnerCard(this);
         cards.add(card);
+    }
+
+    public void addLoan(ClientLoan clientLoan) {
+        clientLoan.setClient(this);
+        clientLoans.add(clientLoan);
     }
 
     @JsonIgnore

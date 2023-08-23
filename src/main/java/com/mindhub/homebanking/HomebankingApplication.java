@@ -2,10 +2,12 @@ package com.mindhub.homebanking;
 
 import com.mindhub.homebanking.models.*;
 import com.mindhub.homebanking.repositories.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -18,13 +20,15 @@ public class HomebankingApplication {
 		SpringApplication.run(HomebankingApplication.class, args);
 	}
 
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
 	@Bean
 	public CommandLineRunner initData(ClientRepository clientRepository, AccountRepository accountRepository, TransactionRepository transactionRepository, LoanRepository loanRepository, ClientLoanRepository clientLoanRepository, CardRepository cardRepository){
 		return (args) -> {
-		Client client = new Client("Melba", "Morel" , "melba@mindhub.com" );
+		Client client = new Client("Melba", "Morel" , "melba@mindhub.com", passwordEncoder.encode("elbajito") );
 
-			Client client1 = new Client("Bautista", "Sabaris" , "bautisab@mindhub.com" );
+			Client client1 = new Client("Bautista", "Sabaris" , "bautisab@mindhub.com", passwordEncoder.encode("crack") );
 
 			Account account = new Account("VIN001", LocalDate.now(),7500);
 			client.addAccount(account);
@@ -63,13 +67,21 @@ public class HomebankingApplication {
 
 			Loan loan3= new Loan("Automotriz", 300000.0,payments3);
 
-			ClientLoan clientLoan1= new ClientLoan(400000.0,60,client,loan1);
+			ClientLoan clientLoan1= new ClientLoan(400000.0,60);
+			client.addLoan(clientLoan1);
+			loan1.addClient(clientLoan1);
 
-			ClientLoan clientLoan2= new ClientLoan(50000.0,12,client,loan2);
+			ClientLoan clientLoan2= new ClientLoan(50000.0,12);
+			client.addLoan(clientLoan2);
+			loan2.addClient(clientLoan2);
 
-			ClientLoan clientLoan3= new ClientLoan(100000.0,24,client1,loan2);
+			ClientLoan clientLoan3= new ClientLoan(100000.0,24);
+			client1.addLoan(clientLoan3);
+			loan2.addClient(clientLoan3);
 
-			ClientLoan clientLoan4= new ClientLoan(200000.0,36,client1,loan3);
+			ClientLoan clientLoan4= new ClientLoan(200000.0,36);
+			client1.addLoan(clientLoan4);
+			loan3.addClient(clientLoan4);
 
 			Card card = new Card(client.toString(),CardType.DEBIT, CardColor.GOLD, "0532 2786 1904 9427",183,LocalDate.now(),LocalDate.now().plusYears(5));
 			client.addCard(card);

@@ -30,6 +30,7 @@ public class Loan {
         this.name = name;
         this.maxAmount = maxAmount;
         this.payments = payments;
+        this.clientLoans = new HashSet<>();
     }
 
     public Long getId() {
@@ -60,5 +61,9 @@ public class Loan {
         this.payments = payments;
     }
 
+    public void addClient(ClientLoan clientLoan) {
+        clientLoan.setLoan(this);
+        clientLoans.add(clientLoan);
+    }
 
 }

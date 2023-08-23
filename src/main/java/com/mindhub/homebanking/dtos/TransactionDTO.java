@@ -39,24 +39,4 @@ public class TransactionDTO {
     public LocalDate getDate() {
         return date;
     }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setType(TransactionType type) {
-        this.type = type;
-    }
-
-    public void setAmount(double amount) {
-        this.amount = amount;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setDate(LocalDate date) {
-        this.date = date;
-    }
 }

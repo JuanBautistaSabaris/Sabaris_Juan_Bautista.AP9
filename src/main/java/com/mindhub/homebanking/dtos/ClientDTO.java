@@ -1,7 +1,6 @@
 package com.mindhub.homebanking.dtos;
 
 import com.mindhub.homebanking.models.Client;
-import com.mindhub.homebanking.models.Loan;
 
 import java.util.HashSet;
 import java.util.Set;
