@@ -1,6 +1,7 @@
 package com.mindhub.homebanking.controllers;
 
 import com.mindhub.homebanking.dtos.AccountDTO;
+import com.mindhub.homebanking.dtos.ClientDTO;
 import com.mindhub.homebanking.dtos.TransactionDTO;
 import com.mindhub.homebanking.models.Account;
 import com.mindhub.homebanking.models.Transaction;
@@ -29,7 +30,6 @@ public class TransactionController {
 
     @RequestMapping("/transactions/{id}")
     public TransactionDTO getTransactionById(@PathVariable Long id) {
-        Transaction transaction = transactionRepository.findById(id).orElse(null);
-        return new TransactionDTO(transaction);
+        return transactionRepository.findById(id).map(TransactionDTO::new).orElse(null);
     }
 }

@@ -44,10 +44,6 @@ public class Account {
 
     public LocalDate getDate() { return creationDate; }
 
-    public LocalDate getCreationDate() {
-        return creationDate;
-    }
-
     public double getBalance() {
         return balance;
     }

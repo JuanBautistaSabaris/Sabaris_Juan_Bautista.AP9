@@ -30,6 +30,8 @@ public class HomebankingApplication {
 
 			Client client1 = new Client("Bautista", "Sabaris" , "bautisab@mindhub.com", passwordEncoder.encode("crack") );
 
+			Client client2 = new Client("Admin", "Admin", "admin@mindhub.com", passwordEncoder.encode("soyadmin"));
+
 			Account account = new Account("VIN001", LocalDate.now(),7500);
 			client.addAccount(account);
 
@@ -94,6 +96,7 @@ public class HomebankingApplication {
 
 			clientRepository.save(client);
 			clientRepository.save(client1);
+			clientRepository.save(client2);
 			accountRepository.save(account);
 			accountRepository.save(account1);
 			accountRepository.save(account2);
