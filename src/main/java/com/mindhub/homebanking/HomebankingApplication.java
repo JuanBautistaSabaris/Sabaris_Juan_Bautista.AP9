@@ -1,5 +1,8 @@
 package com.mindhub.homebanking;
 
+import com.mindhub.homebanking.enums.CardColor;
+import com.mindhub.homebanking.enums.CardType;
+import com.mindhub.homebanking.enums.TransactionType;
 import com.mindhub.homebanking.models.*;
 import com.mindhub.homebanking.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,9 +10,10 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -32,31 +36,31 @@ public class HomebankingApplication {
 
 			Client client2 = new Client("Admin", "Admin", "admin@mindhub.com", passwordEncoder.encode("soyadmin"));
 
-			Account account = new Account("VIN001", LocalDate.now(),7500);
+			Account account = new Account("VIN001", LocalDateTime.now(),7500);
 			client.addAccount(account);
 
-			Transaction transaction = new Transaction(TransactionType.DEBIT,-2300,"Taxes",LocalDate.now());
+			Transaction transaction = new Transaction(TransactionType.DEBIT,-2300,"Taxes",LocalDateTime.now());
 			account.addTransaction(transaction);
 
-			Transaction transaction1 = new Transaction(TransactionType.CREDIT,6500,"Loan",LocalDate.now());
+			Transaction transaction1 = new Transaction(TransactionType.CREDIT,6500,"Loan",LocalDateTime.now());
 			account.addTransaction(transaction1);
 
-			Account account1 = new Account("VIN002", LocalDate.now().plusDays(1),9000);
+			Account account1 = new Account("VIN002", LocalDateTime.now().plusDays(1),9000);
 			client.addAccount(account1);
 
-			Transaction transaction2 = new Transaction(TransactionType.CREDIT,4000,"Loan",LocalDate.now().plusDays(1));
+			Transaction transaction2 = new Transaction(TransactionType.CREDIT,4000,"Loan",LocalDateTime.now().plusDays(1));
 			account1.addTransaction(transaction2);
 
-			Transaction transaction3 = new Transaction(TransactionType.DEBIT,-3000,"Debt",LocalDate.now().plusDays(1));
+			Transaction transaction3 = new Transaction(TransactionType.DEBIT,-3000,"Debt",LocalDateTime.now().plusDays(1));
 			account1.addTransaction(transaction3);
 
-			Account account2 = new Account("VIN012", LocalDate.now(),12000);
+			Account account2 = new Account("VIN012", LocalDateTime.now(),12000);
 			client1.addAccount(account2);
 
-			Transaction transaction4 = new Transaction(TransactionType.DEBIT,-4200,"Taxes",LocalDate.now());
+			Transaction transaction4 = new Transaction(TransactionType.DEBIT,-4200,"Taxes",LocalDateTime.now());
 			account2.addTransaction(transaction4);
 
-			Transaction transaction5 = new Transaction(TransactionType.CREDIT,8000,"Loan",LocalDate.now());
+			Transaction transaction5 = new Transaction(TransactionType.CREDIT,8000,"Loan",LocalDateTime.now());
 			account2.addTransaction(transaction5);
 
 			List<Integer> payments =Arrays.asList (12,24,36,48,60);
@@ -71,27 +75,27 @@ public class HomebankingApplication {
 
 			ClientLoan clientLoan1= new ClientLoan(400000.0,60);
 			client.addLoan(clientLoan1);
-			loan1.addClient(clientLoan1);
+			loan1.addClientLoan(clientLoan1);
 
 			ClientLoan clientLoan2= new ClientLoan(50000.0,12);
 			client.addLoan(clientLoan2);
-			loan2.addClient(clientLoan2);
+			loan2.addClientLoan(clientLoan2);
 
 			ClientLoan clientLoan3= new ClientLoan(100000.0,24);
 			client1.addLoan(clientLoan3);
-			loan2.addClient(clientLoan3);
+			loan2.addClientLoan(clientLoan3);
 
 			ClientLoan clientLoan4= new ClientLoan(200000.0,36);
 			client1.addLoan(clientLoan4);
-			loan3.addClient(clientLoan4);
+			loan3.addClientLoan(clientLoan4);
 
-			Card card = new Card(client.toString(),CardType.DEBIT, CardColor.GOLD, "0532 2786 1904 9427",183,LocalDate.now(),LocalDate.now().plusYears(5));
+			Card card = new Card(client.toString(),CardType.DEBIT, CardColor.GOLD, "0532 2786 1904 9427",183,LocalDateTime.now(),LocalDateTime.now().plusYears(5));
 			client.addCard(card);
 
-			Card card1 = new Card(client.toString(),CardType.CREDIT, CardColor.TITANIUM, "0825 2751 4730 1865",625,LocalDate.now(),LocalDate.now().plusYears(5));
+			Card card1 = new Card(client.toString(),CardType.CREDIT, CardColor.TITANIUM, "0825 2751 4730 1865",625,LocalDateTime.now(),LocalDateTime.now().plusYears(5));
 			client.addCard(card1);
 
-			Card card2 = new Card(client1.toString(),CardType.DEBIT, CardColor.SILVER, "2093 5489 2913 5903",220,LocalDate.now(),LocalDate.now().plusYears(5));
+			Card card2 = new Card(client1.toString(),CardType.DEBIT, CardColor.SILVER, "2093 5489 2913 5903",220,LocalDateTime.now(),LocalDateTime.now().plusYears(5));
 			client1.addCard(card2);
 
 			clientRepository.save(client);

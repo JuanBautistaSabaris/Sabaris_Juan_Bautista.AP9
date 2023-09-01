@@ -9,9 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -25,14 +26,25 @@ public class AccountController {
     @Autowired
     private ClientRepository clientRepository;
 
-    @RequestMapping("/accounts")
+    @GetMapping("/accounts")
     public List<AccountDTO> getAccounts() {
         return accountRepository.findAll().stream().map(AccountDTO::new).collect(toList());
     }
 
-    @RequestMapping("/accounts/{id}")
-    public AccountDTO getAccountById(@PathVariable Long id){
-        return accountRepository.findById(id).map(AccountDTO::new).orElse(null);
+    @GetMapping("/accounts/{id}")
+    public ResponseEntity<Object> getClient(@PathVariable Long id, Authentication authentication) {
+        Client client = clientRepository.findByEmail(authentication.getName());
+        Account account = accountRepository.findById(id).orElse(null);
+        if (client== null){
+            return new ResponseEntity<>("Client not found", HttpStatus.FORBIDDEN);
+        }
+        if( account == null){
+            return new ResponseEntity<>("Account not found", HttpStatus.FORBIDDEN);
+        }
+        if (account.getOwnerAccount().getId().equals(client.getId())) {
+            return new ResponseEntity<>(new AccountDTO(account), HttpStatus.ACCEPTED);
+        }
+        return new ResponseEntity<>("You're  not the owner", HttpStatus.FORBIDDEN);
     }
 
     public String accountNumberGenerator() {
@@ -43,21 +55,28 @@ public class AccountController {
         return prefix + accountNumberStr;
     }
 
-    public void accCreator(Client currentClient){
-        LocalDate today = LocalDate.now();
-        Account currentAccount = new Account(accountNumberGenerator(), today, 0);
-        currentClient.addAccount(currentAccount);
-        accountRepository.save(currentAccount);
+    @PostMapping("/clients/current/accounts")
+    public ResponseEntity<Object> createAccount(Authentication authentication) {
+        boolean hasClientAuthority = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch(authority -> authority.equals("CLIENT"));
+        if (!hasClientAuthority) {
+            return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
+        }
+        Client client = clientRepository.findByEmail(authentication.getName());
+        if (client.getAccounts().size() >= 3) {
+            return new ResponseEntity<>("User has 3 accounts", HttpStatus.FORBIDDEN);
+        }
+        String accountNumber = accountNumberGenerator();
+        Account newAccount = new Account(accountNumber, LocalDateTime.now(), 0.0);
+        client.addAccount(newAccount);
+        accountRepository.save(newAccount);
+        clientRepository.save(client);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @RequestMapping(path = "/clients/current/accounts", method = RequestMethod.POST)
-    public ResponseEntity<Object> createAccount(Authentication authentication) {
-        Client currentClient = clientRepository.findByEmail(authentication.getName());
-        if (currentClient.getAccounts().size() >= 3) {
-            return new ResponseEntity<>("E403 FORBIDDEN", HttpStatus.FORBIDDEN);
-        } else {
-            accCreator(currentClient);
-            return new ResponseEntity<>("201 CREATED", HttpStatus.CREATED);
-        }
+    @GetMapping("/clients/current/accounts")
+    public List<AccountDTO> getClientAccount(Authentication authentication){
+        return clientRepository.findByEmail(authentication.getName()).getAccounts().stream().map(AccountDTO::new).collect(toList());
     }
 }
