@@ -95,7 +95,7 @@ public class Client {
         cards.add(card);
     }
 
-    public void addLoan(ClientLoan clientLoan) {
+    public void addClientLoan(ClientLoan clientLoan) {
         clientLoan.setClient(this);
         clientLoans.add(clientLoan);
     }
