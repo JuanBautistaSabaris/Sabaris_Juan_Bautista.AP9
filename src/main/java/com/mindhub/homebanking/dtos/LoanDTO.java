@@ -3,9 +3,6 @@ package com.mindhub.homebanking.dtos;
 import com.mindhub.homebanking.models.Loan;
 
 import java.util.List;
-import java.util.Set;
-
-import static java.util.stream.Collectors.toSet;
 
 public class LoanDTO {
     private Long id;

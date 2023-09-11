@@ -5,7 +5,7 @@ import com.mindhub.homebanking.models.Account;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
+import static java.util.stream.Collectors.toSet;
 
 public class AccountDTO {
     private Long id;
@@ -23,7 +23,7 @@ public class AccountDTO {
         this.transactions = account.getTransactions()
                 .stream()
                 .map(TransactionDTO::new)
-                .collect(Collectors.toSet());
+                .collect(toSet());
     }
 
     public Long getId() {

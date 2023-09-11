@@ -1,13 +1,9 @@
 package com.mindhub.homebanking.controllers;
 
 import com.mindhub.homebanking.dtos.TransactionDTO;
-import com.mindhub.homebanking.enums.TransactionType;
 import com.mindhub.homebanking.models.Account;
-import com.mindhub.homebanking.models.Client;
 import com.mindhub.homebanking.models.Transaction;
-import com.mindhub.homebanking.repositories.AccountRepository;
 import com.mindhub.homebanking.repositories.ClientRepository;
-import com.mindhub.homebanking.repositories.TransactionRepository;
 import com.mindhub.homebanking.services.AccountService;
 import com.mindhub.homebanking.services.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +14,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.toList;
 
 @RestController
 @RequestMapping("/api")
@@ -63,13 +54,13 @@ public class TransactionController {
         if (amount <= 0) {
             return new ResponseEntity<>("Amount invalid", HttpStatus.FORBIDDEN);
         }
-        if ( description.isEmpty()) {
+        if ( description.isBlank()) {
             return new ResponseEntity<>("Description is empty", HttpStatus.FORBIDDEN);
         }
-        if (fromAccountNumber.isEmpty()) {
+        if (fromAccountNumber.isBlank()) {
             return new ResponseEntity<>("Number of source account is empty", HttpStatus.FORBIDDEN);
         }
-        if (toAccountNumber.isEmpty()) {
+        if (toAccountNumber.isBlank()) {
             return new ResponseEntity<>("Number of destination account is empty", HttpStatus.FORBIDDEN);
         }
 
