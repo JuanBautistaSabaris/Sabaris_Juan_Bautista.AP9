@@ -54,10 +54,14 @@ public class ClientController {
             return new ResponseEntity<>("Name already in use", HttpStatus.FORBIDDEN);
         }
 
+        //Create new account
         Account account = accountService.createAccount();
+        //Save account
         accountService.saveAccount(account);
+        //Create new client
         Client client = new Client(firstName, lastName, email, passwordEncoder.encode(password));
         client.addAccount(account);
+        //Save client
         clientService.saveClient(client);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }

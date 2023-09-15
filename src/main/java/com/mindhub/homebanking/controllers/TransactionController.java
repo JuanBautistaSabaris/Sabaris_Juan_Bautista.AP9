@@ -41,16 +41,17 @@ public class TransactionController {
     @PostMapping("/transactions")
     public ResponseEntity<Object> createCurrentCard(@RequestParam double amount, @RequestParam String
             description, @RequestParam String fromAccountNumber, @RequestParam String toAccountNumber, Authentication authentication) {
+        //Validate client
         boolean hasClientAuthority = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .anyMatch(authority -> authority.equals("CLIENT"));
         if (!hasClientAuthority) {
             return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
         }
-
+        //Get accounts
         Account sourceAccount = accountService.findByNumber(fromAccountNumber);
         Account destinationAccount= accountService.findByNumber(toAccountNumber);
-
+        //Validate params
         if (amount <= 0) {
             return new ResponseEntity<>("Amount invalid", HttpStatus.FORBIDDEN);
         }
@@ -63,32 +64,35 @@ public class TransactionController {
         if (toAccountNumber.isBlank()) {
             return new ResponseEntity<>("Number of destination account is empty", HttpStatus.FORBIDDEN);
         }
-
+        //Account doesn't be same account
         if (fromAccountNumber.equals(toAccountNumber)){
             return new ResponseEntity<>("destination account doesn't exist", HttpStatus.FORBIDDEN);
         }
-
+        //Account exists
         if(sourceAccount==null){
             return new ResponseEntity<>("Source account not found",HttpStatus.FORBIDDEN);
         }
         if(destinationAccount==null){
             return new ResponseEntity<>("Destination account not found",HttpStatus.FORBIDDEN);
         }
-
+        //Validate current account with source account
         if(!sourceAccount.getOwnerAccount().getEmail().equals(authentication.getName())){
             return new ResponseEntity<>("Source account must be yours",HttpStatus.FORBIDDEN);
         }
-
+        //Verify has balance
         if(sourceAccount.getBalance()<amount){
             return new ResponseEntity<>("Insufficient funds",HttpStatus.FORBIDDEN);
         }
 
+        //New transactions
         Transaction debitTransaction = transactionService.createDebitTransaction(amount,description);
         Transaction creditTransaction = transactionService.createCreditTransaction(amount,description);
         sourceAccount.addTransaction(debitTransaction);
         destinationAccount.addTransaction(creditTransaction);
+        //Change balance
         sourceAccount.minusBalance(amount);
         destinationAccount.plusBalance(amount);
+        //Save transactions
         accountService.saveAccount(sourceAccount);
         accountService.saveAccount(destinationAccount);
         transactionService.saveTransaction(debitTransaction);

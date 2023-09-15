@@ -33,15 +33,16 @@ public class CardController {
 
     @GetMapping("/clients/current/cards")
     public List<CardDTO> getCurrentClientCards(Authentication authentication) {
-        //get client
+        //Get client
         Client currentClient= clientService.findByEmail(authentication.getName());
-        //get cards
+        //Get cards
         return currentClient.getCards().stream().map(CardDTO::new).collect(toList());
     }
 
     @PostMapping("/clients/current/cards")
     public ResponseEntity<Object> createCard(
             @RequestParam CardType cardType, @RequestParam CardColor cardColor, Authentication authentication) {
+        //Validate CLIENT
         boolean hasClientAuthority = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .anyMatch(authority -> authority.equals("CLIENT"));
@@ -49,12 +50,13 @@ public class CardController {
         if (!hasClientAuthority) {
             return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
         }
+        //Get client information
         Client client = clientService.findByEmail(authentication.getName());
-
+        //Validation card
         if (cardService.existsByTypeAndColorAndClient(cardType, cardColor, client)) {
             return new ResponseEntity<>("Card already exist", HttpStatus.FORBIDDEN);
         }
-
+        //Create card
         Card newCard = cardService.createCard(client.cardHolder(),cardType,cardColor);
         client.addCard(newCard);
         cardService.saveCard(newCard);

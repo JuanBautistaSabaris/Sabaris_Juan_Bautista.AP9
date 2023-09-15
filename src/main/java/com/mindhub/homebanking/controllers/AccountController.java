@@ -50,14 +50,16 @@ public class AccountController {
 
     @PostMapping("/clients/current/accounts")
     public ResponseEntity<Object> createAccount(Authentication authentication) {
+        //Validate CLIENT
         boolean hasClientAuthority = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .anyMatch(authority -> authority.equals("CLIENT"));
         if (!hasClientAuthority) {
             return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
         }
+        //Get client information
         Client client = clientService.findByEmail(authentication.getName());
-
+        //Max of accounts
         if (client.getAccounts().size() >= 3) {
             return new ResponseEntity<>("User has 3 accounts", HttpStatus.FORBIDDEN);
         }
@@ -71,9 +73,9 @@ public class AccountController {
 
     @GetMapping("/clients/current/accounts")
     public List<AccountDTO> getClientAccount(Authentication authentication) {
-        //get client
+        //Get client
         Client client = clientService.findByEmail(authentication.getName());
-        //show accounts
+        //Show accounts
         return client.getAccounts().stream().map(AccountDTO::new).collect(toList());
     }
 }

@@ -7,10 +7,10 @@ import com.mindhub.homebanking.models.Card;
 import com.mindhub.homebanking.models.Client;
 import com.mindhub.homebanking.repositories.CardRepository;
 import com.mindhub.homebanking.services.CardService;
+import com.mindhub.homebanking.utils.CardUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -49,19 +49,11 @@ public class CardServiceImplement implements CardService {
 
     @Override
     public int generateCvv() {
-        return (int) (Math.random() * 999);
+        return CardUtils.generateCvv();
     }
 
     @Override
     public String generateNumber() {
-        DecimalFormat format = new DecimalFormat("0000");
-        String number = "";
-        for (int i = 0; i < 4; i++) {
-            number += format.format((int) (Math.random() * 9999));
-            if (i != 3) {
-                number += "-";
-            }
-        }
-        return number;
+        return CardUtils.generateNumber();
     }
 }
